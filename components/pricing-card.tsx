@@ -5,8 +5,13 @@ import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { cn, distance, round } from "@/utils";
 import Link from "next/link";
 import React, { useState, useRef } from "react";
+import Stripe from "stripe";
 
-const PricingCardContent = () => {
+const PricingCardContent = ({
+  stripeProduct,
+}: {
+  stripeProduct?: Stripe.Price;
+}) => {
   return (
     <React.Fragment>
       <div className="flex w-full flex-col gap-2">
@@ -18,7 +23,14 @@ const PricingCardContent = () => {
       <div className="grid w-full items-start gap-10 rounded-xl border bg-neutral-200/60 px-5 py-10 dark:bg-neutral-800/60 sm:px-10">
         <div className="flex flex-col gap-4 text-center">
           <div>
-            <h4 className="text-7xl font-bold">$25</h4>
+            <h4 className="text-7xl font-bold">
+              {stripeProduct?.unit_amount &&
+                `${(stripeProduct.unit_amount / 100).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 0,
+                })}`}
+            </h4>
             <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
               one-time payment
             </p>
@@ -36,7 +48,11 @@ const PricingCardContent = () => {
 };
 
 // adapted from https://stackrant.com/posts/tiltable-cards; https://buildui.com/recipes/spotlight
-export const PricingCard = () => {
+export const PricingCard = ({
+  stripeProduct,
+}: {
+  stripeProduct?: Stripe.Price;
+}) => {
   const [rotations, setRotations] = useState({ x: 0, y: 0, z: 0 });
   const [isAnimating, setAnimating] = useState(false);
   const isAnimatingReference = useRef(isAnimating);
@@ -122,7 +138,7 @@ export const PricingCard = () => {
           `,
         }}
       />
-      <PricingCardContent />
+      <PricingCardContent stripeProduct={stripeProduct} />
     </motion.div>
   );
 };
