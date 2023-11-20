@@ -1,17 +1,46 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { cn, distance, round } from "@/utils";
-import Link from "next/link";
+import { distance, round } from "@/utils";
 import React, { useState, useRef } from "react";
 import Stripe from "stripe";
+import axios from "axios";
+import { Icons } from "./icons";
 
 const PricingCardContent = ({
   stripeProduct,
 }: {
   stripeProduct?: Stripe.Price;
 }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handlePayment = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setIsLoading(true);
+    if (stripeProduct?.id) {
+      const { data } = await axios.post(
+        "/api/payment",
+        {
+          stripeProductID: stripeProduct.id,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      window.location.assign(data);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 5000);
+    } else {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <React.Fragment>
       <div className="flex w-full flex-col gap-2">
@@ -35,9 +64,12 @@ const PricingCardContent = ({
               one-time payment
             </p>
           </div>
-          <Link href="#" className={cn(buttonVariants({ size: "lg" }))}>
+          <Button size="lg" disabled={isLoading} onClick={handlePayment}>
+            {isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Get Started
-          </Link>
+          </Button>
         </div>
       </div>
       <p className="max-w-[85%] font-semibold leading-normal text-neutral-500 dark:text-neutral-400 sm:leading-7">
