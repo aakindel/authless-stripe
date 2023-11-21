@@ -24,10 +24,19 @@ const Home: NextPage = () => {
     <div className="mx-auto min-h-screen w-full">
       <MainNav />
       <div className="mx-auto flex h-[calc(100vh-57px)] w-full max-w-[1400px] items-center justify-center px-4 sm:px-8">
-        {stripeProducts &&
+        {stripeProducts.length ? (
           stripeProducts.map((stripeProduct) => (
             <PricingCard key={stripeProduct.id} stripeProduct={stripeProduct} />
-          ))}
+          ))
+        ) : (
+          <PricingCard
+            stripeProduct={
+              {
+                unit_amount: 2500,
+              } as Stripe.Price
+            }
+          />
+        )}
       </div>
     </div>
   );
