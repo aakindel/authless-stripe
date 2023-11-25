@@ -15,9 +15,14 @@ const Home: NextPage = () => {
   }, []);
 
   const fetchStripeProducts = async () => {
-    const { data } = await axios.get("/api/get-products");
-    setStripeProducts(data);
-    console.log(data);
+    const { data } = (await axios.get("/api/get-products")) as {
+      data: Stripe.Price[];
+    };
+    setStripeProducts(
+      data.filter(
+        (item) => item.id === process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ID
+      )
+    );
   };
 
   return (

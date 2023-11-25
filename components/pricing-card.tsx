@@ -64,11 +64,15 @@ const PricingCardContent = ({
               one-time payment
             </p>
           </div>
-          <Button size="lg" disabled={isLoading} onClick={handlePayment}>
-            {isLoading && (
+          <Button
+            size="lg"
+            disabled={isLoading || !stripeProduct?.id}
+            onClick={handlePayment}
+          >
+            {(isLoading || !stripeProduct?.id) && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Get Started
+            {!stripeProduct?.id ? "Loading" : "Get Started"}
           </Button>
         </div>
       </div>
